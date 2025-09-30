@@ -57,14 +57,12 @@ const PieChartDestroyer = () => {
     return (timestamp + hashStr).slice(0, 7).toUpperCase();
   };
 
-  // Count active bad choices
+  // Count active bad choices (first 3 options are free)
   const countChoices = () => {
     let count = 0;
-    if (slices > 7) count++;
+    // Number of Slices, Color Scheme, and Rotation are now FREE
     if (threeD) count++;
     if (explode) count++;
-    if (colors !== 'default' && colors !== 'colorsafe') count++;
-    if (rotation !== 0) count++;
     if (hideLabels || tinyLabels || randomLabelSizes) count++;
     if (shadow) count++;
     if (outline) count++;
@@ -205,7 +203,7 @@ const PieChartDestroyer = () => {
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
           <h1 className="text-4xl font-bold text-slate-800 mb-2">Pie Chart Destroyer</h1>
-          <p className="text-slate-600 mb-4">Create the worst (or best!) pie chart. You can select up to {MAX_CHOICES} bad options.</p>
+          <p className="text-slate-600 mb-4">Create the worst pie chart. You can select up to {MAX_CHOICES} bad options.</p>
           <div className="mb-6 p-3 bg-amber-50 border-2 border-amber-300 rounded-lg">
             <p className="text-amber-800 font-semibold">Bad choices selected: {choiceCount} / {MAX_CHOICES}</p>
           </div>
@@ -216,16 +214,11 @@ const PieChartDestroyer = () => {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Number of Slices</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Number of Slices <span className="text-green-600 font-semibold">(FREE)</span></label>
                   <select 
                     value={slices}
                     onChange={(e) => {
                       const newValue = parseInt(e.target.value);
-                      const wouldAddChoice = (slices <= 7 && newValue > 7);
-                      if (wouldAddChoice && choiceCount >= MAX_CHOICES) {
-                        alert(`You can only select ${MAX_CHOICES} bad options!`);
-                        return;
-                      }
                       setSlices(newValue);
                     }}
                     className="w-full p-2 border-2 border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none"
@@ -237,18 +230,11 @@ const PieChartDestroyer = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Color Scheme</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Color Scheme <span className="text-green-600 font-semibold">(FREE)</span></label>
                   <select 
                     value={colors}
                     onChange={(e) => {
                       const newValue = e.target.value;
-                      const currentIsBad = colors !== 'default' && colors !== 'colorsafe';
-                      const newIsBad = newValue !== 'default' && newValue !== 'colorsafe';
-                      const wouldAddChoice = !currentIsBad && newIsBad;
-                      if (wouldAddChoice && choiceCount >= MAX_CHOICES) {
-                        alert(`You can only select ${MAX_CHOICES} bad options!`);
-                        return;
-                      }
                       setColors(newValue);
                     }}
                     className="w-full p-2 border-2 border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none"
@@ -263,7 +249,7 @@ const PieChartDestroyer = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Rotation (degrees)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Rotation (degrees) <span className="text-green-600 font-semibold">(FREE)</span></label>
                   <input 
                     type="number"
                     min="0"
@@ -271,11 +257,6 @@ const PieChartDestroyer = () => {
                     value={rotation}
                     onChange={(e) => {
                       const newValue = parseInt(e.target.value) || 0;
-                      const wouldAddChoice = rotation === 0 && newValue !== 0;
-                      if (wouldAddChoice && choiceCount >= MAX_CHOICES) {
-                        alert(`You can only select ${MAX_CHOICES} bad options!`);
-                        return;
-                      }
                       setRotation(newValue);
                     }}
                     className="w-full p-2 border-2 border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none"
