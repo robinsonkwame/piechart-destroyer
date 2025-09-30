@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import html2canvas from 'html2canvas';
 
 const PieChartDestroyer = () => {
   const [slices, setSlices] = useState(5);
@@ -24,6 +25,7 @@ const PieChartDestroyer = () => {
   const [goodChoices, setGoodChoices] = useState([]);
   const [participationCode, setParticipationCode] = useState('');
   const [choiceCount, setChoiceCount] = useState(0);
+  const chartRef = useRef(null);
 
   const MAX_CHOICES = 5;
 
@@ -186,16 +188,83 @@ const PieChartDestroyer = () => {
     }
   }, []);
 
-  // Capture chart and redirect to Canvas
-  const captureAndRedirect = () => {
-    // For now, just open Canvas and give instructions
-    const confirmed = confirm(
-      'Take a screenshot of your chart, then click OK to open the Canvas discussion where you can paste it!'
-    );
-    
-    if (confirmed) {
-      window.open('https://canvas.wayne.edu/courses/228219/discussion_topics/1782670', '_blank');
+  // Capture chart with failsafe methods
+  const captureAndRedirect = async () => {
+    try {
+      // Method 1: Try to capture chart as PNG and copy to clipboard
+      if (chartRef.current) {
+        const canvas = await html2canvas(chartRef.current, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          logging: false,
+          useCORS: true
+        });
+        
+        // Try to copy to clipboard
+        if (navigator.clipboard && window.ClipboardItem) {
+          canvas.toBlob(async (blob) => {
+            try {
+              await navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': blob })
+              ]);
+              alert('Chart copied to clipboard! Now paste it in Canvas.');
+              window.open('https://canvas.wayne.edu/courses/228219/discussion_topics/1782670', '_blank');
+            } catch (clipboardError) {
+              console.log('Clipboard failed, trying download...', clipboardError);
+              downloadImage(canvas);
+            }
+          });
+          return;
+        }
+      }
+    } catch (error) {
+      console.log('html2canvas failed, trying download fallback...', error);
     }
+    
+    // Method 2: If clipboard fails, try to download the image
+    try {
+      if (chartRef.current) {
+        const canvas = await html2canvas(chartRef.current, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          logging: false,
+          useCORS: true
+        });
+        downloadImage(canvas);
+        return;
+      }
+    } catch (error) {
+      console.log('Download fallback failed, showing manual instructions...', error);
+    }
+    
+    // Method 3: Manual screenshot instructions
+    showScreenshotInstructions();
+  };
+  
+  const downloadImage = (canvas) => {
+    try {
+      const link = document.createElement('a');
+      link.download = 'pie-chart-destroyer.png';
+      link.href = canvas.toDataURL();
+      link.click();
+      alert('Chart saved to your Downloads folder! Upload this file to Canvas.');
+      window.open('https://canvas.wayne.edu/courses/228219/discussion_topics/1782670', '_blank');
+    } catch (error) {
+      console.log('Download failed, showing manual instructions...', error);
+      showScreenshotInstructions();
+    }
+  };
+  
+  const showScreenshotInstructions = () => {
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const instructions = isMac 
+      ? 'Mac: Press Cmd + Shift + 4, then drag to select your chart'
+      : 'Windows: Press Windows + Shift + S, then drag to select your chart';
+    
+    alert(
+      `Automatic capture failed. Please take a manual screenshot:\n\n${instructions}\n\nThen paste the image in Canvas!`
+    );
+    window.open('https://canvas.wayne.edu/courses/228219/discussion_topics/1782670', '_blank');
   };
 
   return (
@@ -400,6 +469,7 @@ const PieChartDestroyer = () => {
             <div>
               <h2 className="text-xl font-semibold text-slate-700 mb-3">Your Chart</h2>
               <div 
+                ref={chartRef}
                 className="bg-white rounded-lg border-2 border-slate-200 p-4"
                 style={{
                   background: 
@@ -570,9 +640,9 @@ const PieChartDestroyer = () => {
                 <button
                   onClick={captureAndRedirect}
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-                >
-                  Screenshot & Post to Canvas
-                </button>
+                        >
+                          📸 Capture Chart & Post to Canvas
+                        </button>
 
                 <div className="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg">
                   <h3 className="font-semibold text-purple-800 mb-2">Participation Code:</h3>
