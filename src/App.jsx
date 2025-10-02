@@ -188,8 +188,8 @@ const PieChartDestroyer = () => {
     }
   }, []);
 
-  // Capture chart with failsafe methods
-  const captureAndRedirect = async () => {
+  // Capture chart and copy to clipboard only
+  const captureImage = async () => {
     try {
       // Method 1: Try to capture chart as PNG and copy to clipboard
       if (chartRef.current) {
@@ -207,8 +207,7 @@ const PieChartDestroyer = () => {
               await navigator.clipboard.write([
                 new ClipboardItem({ 'image/png': blob })
               ]);
-              alert('Chart copied to clipboard! Now paste it in Canvas.');
-              window.open('https://canvas.wayne.edu/courses/228219/discussion_topics/1782670', '_blank');
+              alert('Chart copied to clipboard! You can now paste it anywhere you need.');
             } catch (clipboardError) {
               console.log('Clipboard failed, trying download...', clipboardError);
               downloadImage(canvas);
@@ -247,8 +246,7 @@ const PieChartDestroyer = () => {
       link.download = 'pie-chart-destroyer.png';
       link.href = canvas.toDataURL();
       link.click();
-      alert('Chart saved to your Downloads folder! Upload this file to Canvas.');
-      window.open('https://canvas.wayne.edu/courses/228219/discussion_topics/1782670', '_blank');
+      alert('Chart saved to your Downloads folder! You can now use this image file anywhere you need.');
     } catch (error) {
       console.log('Download failed, showing manual instructions...', error);
       showScreenshotInstructions();
@@ -262,9 +260,8 @@ const PieChartDestroyer = () => {
       : 'Windows: Press Windows + Shift + S, then drag to select your chart';
     
     alert(
-      `Automatic capture failed. Please take a manual screenshot:\n\n${instructions}\n\nThen paste the image in Canvas!`
+      `Automatic capture failed. Please take a manual screenshot:\n\n${instructions}\n\nThen you can paste the image anywhere you need it!`
     );
-    window.open('https://canvas.wayne.edu/courses/228219/discussion_topics/1782670', '_blank');
   };
 
   return (
@@ -638,10 +635,10 @@ const PieChartDestroyer = () => {
 
               <div className="mt-4 space-y-3">
                 <button
-                  onClick={captureAndRedirect}
+                  onClick={captureImage}
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                         >
-                          📸 Capture Chart & Post to Canvas
+                          📸 Copy Chart to Clipboard
                         </button>
 
                 <div className="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg">
@@ -649,13 +646,7 @@ const PieChartDestroyer = () => {
                   <code className="text-lg font-mono text-purple-700 bg-white px-3 py-2 rounded block text-center">
                     {participationCode}
                   </code>
-                  <p className="text-xs text-purple-600 mt-2 mb-3">Copy this code to submit as proof of participation</p>
-                  <button
-                    onClick={() => window.open('https://canvas.wayne.edu/courses/228219/assignments/2186269', '_blank')}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
-                  >
-                    Submit Code on Canvas
-                  </button>
+                  <p className="text-xs text-purple-600 mt-2">Copy this code to submit as proof of participation</p>
                 </div>
               </div>
             </div>
