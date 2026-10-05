@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Chart card shake when a bad option lands */
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  15% { transform: translate(-8px, 3px) rotate(-1.5deg); }
+  30% { transform: translate(7px, -4px) rotate(1.2deg); }
+  45% { transform: translate(-6px, 2px) rotate(-1deg); }
+  60% { transform: translate(5px, -2px) rotate(0.8deg); }
+  75% { transform: translate(-3px, 1px) rotate(-0.4deg); }
+}
+.shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97); }
+.shake-big { animation: shake 0.45s cubic-bezier(.36,.07,.19,.97) 3; }
+
+/* Rubber-stamp overlay naming the violation */
+@keyframes stamp {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(3) rotate(-12deg); }
+  15% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-12deg); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-12deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05) rotate(-12deg); }
+}
+.stamp {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+  border: 6px solid currentColor;
+  border-radius: 10px;
+  padding: 6px 18px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.85);
+  animation: stamp 1.6s ease-out forwards;
+}
+
+/* Good choices get a gentle sparkle instead */
+@keyframes glow {
+  0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+  100% { box-shadow: 0 0 0 18px rgba(22, 163, 74, 0); }
+}
+.glow { animation: glow 0.8s ease-out; }
+
+/* Destruction meter fill */
+.meter-fill { transition: width 0.5s cubic-bezier(.34,1.56,.64,1), background-color 0.5s; }
+
+/* Alternatives entrance */
+@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.alt-grow { transform-origin: left; animation: grow 0.6s ease-out; }
+@keyframes pop { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+.alt-pop { animation: pop 0.3s ease-out backwards; }
+
+/* Respect reduced-motion (good accessibility practice!) for the effects we add */
+@media (prefers-reduced-motion: reduce) {
+  .shake, .shake-big, .glow, .alt-grow, .alt-pop { animation: none; }
+  .stamp { animation-name: fade; }
+}
+@keyframes fade {
+  0%, 80% { opacity: 1; transform: translate(-50%, -50%) rotate(-12deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(-12deg); }
+}
