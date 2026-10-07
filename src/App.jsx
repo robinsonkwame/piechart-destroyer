@@ -5,7 +5,7 @@ import Alternatives from './Alternatives';
 import {
   MODES, choiceLimit, maxScore, DEFAULT_OPTS, BAD_TOGGLES, GOOD_TOGGLES, LABEL_MODES, BACKGROUNDS,
   COLOR_SCHEMES, countChoices, detectViolations, detectGoodChoices, destructionLevel,
-  readOptsFromUrl, optsToQuery,
+  readOptsFromUrl,
 } from './options';
 
 const COMPANIES = ['Alpha Corp', 'Beta Inc', 'Gamma LLC', 'Delta Ltd', 'Epsilon Co',
@@ -225,17 +225,6 @@ const PieChartDestroyer = () => {
       ? 'Mac: Press Cmd + Shift + 4, then drag to select your chart'
       : 'Windows: Press Windows + Shift + S, then drag to select your chart';
     alert(`Automatic capture failed. Please take a manual screenshot:\n\n${instructions}\n\nThen you can paste the image anywhere you need it!`);
-  };
-
-  const copyShareLink = async () => {
-    const q = optsToQuery(opts);
-    const url = `${window.location.origin}${window.location.pathname}${q ? `?${q}` : ''}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied('Share link copied!');
-    } catch {
-      window.prompt('Copy this link:', url);
-    }
   };
 
   useEffect(() => {
@@ -475,16 +464,10 @@ const PieChartDestroyer = () => {
               )}
 
               <div className="mt-4 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={captureImage}
-                    className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
-                    📸 Copy Chart
-                  </button>
-                  <button onClick={copyShareLink}
-                    className="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
-                    🔗 Copy Share Link
-                  </button>
-                </div>
+                <button onClick={captureImage}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                  📸 Copy Chart to Clipboard
+                </button>
                 {copied && <p className="text-sm text-green-700 text-center font-medium" role="status">{copied}</p>}
 
                 <div className="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg">

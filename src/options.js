@@ -218,9 +218,3 @@ export const readOptsFromUrl = () => {
   else if (p.get('tl') === '1') o.labels = 'tiny';
   return o;
 };
-
-export const optsToQuery = (o) =>
-  Object.entries(URL_KEYS)
-    .filter(([key]) => o[key] !== DEFAULT_OPTS[key])
-    .map(([key, k]) => `${k}=${typeof o[key] === 'boolean' ? (o[key] ? 1 : 0) : encodeURIComponent(o[key])}`)
-    .join('&');
